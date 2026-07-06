@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Contest Tracker | Competitive Programming Dashboard</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="A premium competitive programming contest tracker and DSA progression manager. Features real-time rating updates, goal tracking, Striver/NeetCode sheets, and analytics.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js Date Adapter -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/src/css/style.css">
+</head>
+<body>
+  <!-- Background Aura Glows -->
+  <div class="glow-aura glow-1"></div>
+  <div class="glow-aura glow-2"></div>
+
+  <!-- Notification Banner -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>APEX</h1>
+          <span>Contest Tracker</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn active" data-target="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-target="contests" id="nav-contests">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Contest Hub</span>
+        </button>
+        <button class="nav-btn" data-target="problems" id="nav-problems">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Problem Notebook</span>
+        </button>
+        <button class="nav-btn" data-target="analytics" id="nav-analytics">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Analytics & Rating</span>
+        </button>
+        <button class="nav-btn" data-target="friends" id="nav-friends">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Friend Compare</span>
+        </button>
+        <button class="nav-btn" data-target="goals" id="nav-goals">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span>Goal Center</span>
+        </button>
+      </nav>
+
+      <div class="user-profile-section">
+        <div class="user-info">
+          <div class="user-avatar" id="cf-avatar-placeholder">CF</div>
+          <div class="user-details">
+            <h4 id="user-cf-handle-display">Not Set</h4>
+            <span id="user-cf-rating-display">Rating: --</span>
+          </div>
+        </div>
+        <button class="settings-btn" id="open-settings-btn" aria-label="Open Settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- PAGE: DASHBOARD -->
+      <section id="page-dashboard" class="page-section active">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Welcome Back, coder!</h2>
+            <p>Here is your coding progress and upcoming contests schedule.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="dashboard-new-contest-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Custom Contest
+            </button>
+          </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Registered Contests</span>
+              <h3 class="stat-value" id="stat-registered">0</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Completed Contests</span>
+              <h3 class="stat-value" id="stat-completed">0</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Total Solved</span>
+              <h3 class="stat-value" id="stat-total-solved">0</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Avg Rank</span>
+              <h3 class="stat-value" id="stat-avg-rank">--</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Best Rank</span>
+              <h3 class="stat-value" id="stat-best-rank">--</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Attendance</span>
+              <h3 class="stat-value" id="stat-attendance">--</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Split Layout -->
+        <div class="dashboard-layout">
+          <!-- Left side: Next Up Banner & LeetCode POTD -->
+          <div class="dashboard-left-col">
+            <!-- Next Up Banner -->
+            <div class="next-up-banner" id="next-up-container">
+              <div class="banner-overlay-placeholder">
+                <h3>No Registered Contests</h3>
+                <p>Register for upcoming contests in the Contest Hub to start tracking them!</p>
+              </div>
+            </div>
+
+            <!-- LeetCode POTD Widget -->
+            <div class="potd-card-wrapper">
+              <div class="potd-card">
+                <div class="potd-badge" id="potd-badge-id">LeetCode POTD</div>
+                <div class="potd-header">
+                  <h3 id="potd-title">Loading daily question...</h3>
+                  <span class="difficulty-tag" id="potd-difficulty">--</span>
+                </div>
+                <div class="potd-topics" id="potd-tags">
+                  <!-- Tag pills -->
+                </div>
+                <div class="potd-footer">
+                  <a href="#" target="_blank" class="btn btn-secondary btn-sm" id="potd-solve-link">
+                    Solve Question
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+                  </a>
+                  <label class="potd-solved-checkbox-label">
+                    <input type="checkbox" id="potd-solved-checkbox">
+                    <span class="custom-checkbox"></span>
+                    Mark as Solved
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: Watchlist & Active Goals -->
+          <div class="dashboard-right-col">
+            <!-- Registered watchlist -->
+            <div class="watchlist-section flex-card">
+              <div class="card-header">
+                <h3>Registered Contests Watchlist</h3>
+              </div>
+              <div class="watchlist-items scrollable-y" id="dashboard-watchlist-container">
+                <div class="empty-state">No contests watched.</div>
+              </div>
+            </div>
+
+            <!-- Active Goals -->
+            <div class="goals-section flex-card">
+              <div class="card-header">
+                <h3>Goal Tracker</h3>
+                <button class="btn-text btn-sm" id="dashboard-add-goal">New Goal</button>
+              </div>
+              <div class="goals-items scrollable-y" id="dashboard-goals-container">
+                <div class="empty-state">No goals set.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: CONTEST HUB -->
+      <section id="page-contests" class="page-section">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Contest Hub</h2>
+            <p>Filter, search, and register for coding contests across all platforms.</p>
+          </div>
+        </header>
+
+        <!-- Filters Toolbar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="contest-search" placeholder="Search contests...">
+          </div>
+
+          <div class="platform-filters" id="platform-filters-container">
+            <button class="filter-pill active" data-platform="all">All</button>
+            <button class="filter-pill" data-platform="codeforces">Codeforces</button>
+            <button class="filter-pill" data-platform="leetcode">LeetCode</button>
+            <button class="filter-pill" data-platform="codechef">CodeChef</button>
+            <button class="filter-pill" data-platform="atcoder">AtCoder</button>
+            <button class="filter-pill" data-platform="custom">Custom</button>
+          </div>
+        </div>
+
+        <div class="tabs-row">
+          <div class="tabs-btn-group">
+            <button class="tab-btn active" data-status="upcoming">Upcoming</button>
+            <button class="tab-btn" data-status="active">Active</button>
+            <button class="tab-btn" data-status="finished">Finished</button>
+          </div>
+          <div class="sort-selector">
+            <span>Sort by: </span>
+            <select id="contest-sort" class="select-input">
+              <option value="time-asc">Time: Soonest First</option>
+              <option value="time-desc">Time: Latest First</option>
+              <option value="duration-asc">Duration: Shorter First</option>
+              <option value="duration-desc">Duration: Longer First</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Contest Cards Container -->
+        <div class="contest-grid" id="contests-container">
+          <div class="loading-spinner">Loading contests...</div>
+        </div>
+      </section>
+
+      <!-- PAGE: PROBLEM NOTEBOOK -->
+      <section id="page-problems" class="page-section">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Problem Notebook</h2>
+            <p>Save code notes, categorize by topics, and track DSA sheets progression.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="import-dsa-sheet-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Import DSA Sheet
+            </button>
+            <button class="btn btn-primary" id="add-problem-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Custom Problem
+            </button>
+          </div>
+        </header>
+
+        <!-- Problem Tracker Dashboard -->
+        <div class="problem-notebook-layout">
+          <!-- Left side: Filters & Problem list -->
+          <div class="problem-list-panel">
+            <div class="toolbar search-problems-bar">
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="problem-search" placeholder="Search problems, sheets, tags...">
+              </div>
+              <select id="problem-filter-status" class="select-input select-sm">
+                <option value="all">All Statuses</option>
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="solved">Solved</option>
+                <option value="review">Needs Review</option>
+              </select>
+            </div>
+
+            <div class="problem-subfilters">
+              <select id="problem-filter-topic" class="select-input select-sm">
+                <option value="all">All Topics</option>
+              </select>
+              <select id="problem-filter-difficulty" class="select-input select-sm">
+                <option value="all">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+              <select id="problem-filter-sheet" class="select-input select-sm">
+                <option value="all">All Sheets</option>
+                <option value="custom">Custom Added</option>
+              </select>
+            </div>
+
+            <div class="problem-table-wrapper scrollable-y">
+              <table class="problem-table">
+                <thead>
+                  <tr>
+                    <th width="40">Status</th>
+                    <th>Problem Name</th>
+                    <th width="100">Platform</th>
+                    <th width="80">Difficulty</th>
+                  </tr>
+                </thead>
+                <tbody id="problems-tbody">
+                  <!-- Dynamic problem list rows -->
+                </tbody>
+              </table>
+              <div id="problems-empty-state" class="empty-state">No problems in your notebook yet. Let's get practicing! Add a custom problem or import a DSA sheet (like Striver SDE or NeetCode) to start. 🚀</div>
+            </div>
+          </div>
+
+          <!-- Right side: Problem notes detailed editor -->
+          <div class="problem-editor-panel" id="problem-editor-container">
+            <div class="editor-placeholder">
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><path d="M12 9V5"/></svg>
+              <h4>Select a problem to view and edit notes</h4>
+              <p>Solve DSA questions, write key logical take-aways and store optimized code snippets here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: ANALYTICS & RATING -->
+      <section id="page-analytics" class="page-section">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Analytics & Rating Progression</h2>
+            <p>Track your rating growth across platforms and analyze your strengths and weaknesses.</p>
+          </div>
+        </header>
+
+        <div class="analytics-layout">
+          <!-- Charts row -->
+          <div class="charts-row-container">
+            <!-- Rating growth graph -->
+            <div class="chart-card rating-chart-card">
+              <div class="chart-header">
+                <h3>Rating Growth Over Time</h3>
+                <div class="chart-controls">
+                  <select id="rating-chart-platform" class="select-input select-sm">
+                    <option value="all">All Platforms</option>
+                    <option value="codeforces">Codeforces</option>
+                    <option value="leetcode">LeetCode</option>
+                    <option value="codechef">CodeChef</option>
+                    <option value="atcoder">AtCoder</option>
+                  </select>
+                </div>
+              </div>
+              <div class="canvas-container">
+                <canvas id="ratingGrowthChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Topic breakdown & Weakness analysis side-by-side -->
+            <div class="sub-charts-grid">
+              <div class="chart-card">
+                <h3>Topic-wise Solve Stats</h3>
+                <div class="canvas-container small-chart">
+                  <canvas id="topicSolveChart"></canvas>
+                </div>
+              </div>
+
+              <div class="chart-card weakness-card flex-card">
+                <h3>Weak Topic Analysis</h3>
+                <div class="weakness-content scrollable-y" id="weakness-analysis-container">
+                  <!-- Analysis output -->
+                </div>
+              </div>
+
+              <div class="chart-card">
+                <h3>Daily Solved Activity</h3>
+                <div class="canvas-container small-chart">
+                  <canvas id="dailyActivityChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Logged Performance History table -->
+          <div class="performance-history-card">
+            <h3>Contest Participation Logs</h3>
+            <div class="history-table-wrapper scrollable-y">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Contest Name</th>
+                    <th>Platform</th>
+                    <th>Rank</th>
+                    <th>Solved</th>
+                    <th>Rating Change</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="performance-logs-tbody">
+                  <!-- Logs -->
+                </tbody>
+              </table>
+              <div id="logs-empty-state" class="empty-state">No contest records logged yet. Finish your next contest, log your rank and rating change, and build your growth timeline! 📈</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: FRIEND COMPARE -->
+      <section id="page-friends" class="page-section">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Friend Comparison</h2>
+            <p>Compare ratings and competitive programming stats side-by-side (Codeforces).</p>
+          </div>
+        </header>
+
+        <div class="friends-layout">
+          <!-- Setup Handles Bar -->
+          <div class="handles-setup-card">
+            <h3>Set Handles to Compare</h3>
+            <div class="inputs-row">
+              <div class="input-group">
+                <label for="compare-user-handle">Your CF Handle</label>
+                <input type="text" id="compare-user-handle" placeholder="eg. tourist">
+              </div>
+              <div class="input-group">
+                <label for="compare-friend-handle">Friend's CF Handle</label>
+                <input type="text" id="compare-friend-handle" placeholder="eg. Benq">
+              </div>
+              <button class="btn btn-primary" id="compare-handles-btn">Compare Ratings</button>
+            </div>
+          </div>
+
+          <div class="comparison-grid" id="comparison-dashboard" style="display: none;">
+            <!-- Comparison Rating Chart -->
+            <div class="chart-card full-width">
+              <h3>Rating Comparison Timeline</h3>
+              <div class="canvas-container">
+                <canvas id="friendComparisonChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Scorecard User -->
+            <div class="scorecard" id="user-scorecard">
+              <div class="card-glow red-glow"></div>
+              <h3 class="user-handle" id="user-score-handle"> tourist</h3>
+              <div class="rating-badge" id="user-score-rating-badge">--</div>
+              <div class="scorecard-stats">
+                <div class="scorecard-row"><span class="label">Current Rating</span><span class="value" id="user-score-rating">--</span></div>
+                <div class="scorecard-row"><span class="label">Max Rating</span><span class="value" id="user-score-max">--</span></div>
+                <div class="scorecard-row"><span class="label">Rank</span><span class="value" id="user-score-rank">--</span></div>
+                <div class="scorecard-row"><span class="label">Contests Played</span><span class="value" id="user-score-contests">--</span></div>
+              </div>
+            </div>
+
+            <!-- Scorecard Friend -->
+            <div class="scorecard friend-scorecard" id="friend-scorecard">
+              <div class="card-glow blue-glow"></div>
+              <h3 class="user-handle" id="friend-score-handle"> Benq</h3>
+              <div class="rating-badge friend" id="friend-score-rating-badge">--</div>
+              <div class="scorecard-stats">
+                <div class="scorecard-row"><span class="label">Current Rating</span><span class="value" id="friend-score-rating">--</span></div>
+                <div class="scorecard-row"><span class="label">Max Rating</span><span class="value" id="friend-score-max">--</span></div>
+                <div class="scorecard-row"><span class="label">Rank</span><span class="value" id="friend-score-rank">--</span></div>
+                <div class="scorecard-row"><span class="label">Contests Played</span><span class="value" id="friend-score-contests">--</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty stats placeholder -->
+          <div class="empty-comparison-placeholder" id="comparison-placeholder">
+            <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h4>Type in Codeforces handles and click compare</h4>
+            <p>Visualize who has higher rating updates and better contest achievements.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: GOAL CENTER -->
+      <section id="page-goals" class="page-section">
+        <header class="page-header">
+          <div class="header-text">
+            <h2>Goal Tracker Center</h2>
+            <p>Set custom targets for problem solving and contest participation to stay motivated.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="goal-center-add-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Set New Goal
+            </button>
+          </div>
+        </header>
+
+        <div class="goals-layout">
+          <div class="goals-grid" id="goals-page-list">
+            <!-- Goals rendered dynamically -->
+          </div>
+          <div id="goals-empty-state" class="empty-state">No active goals. Set a target (e.g. 'Solve 30 Graphs questions') to stay accountable and level up your skills! 🏆</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: SETTINGS -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User settings & Profile Handles</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="settings-cf-handle">Codeforces Handle</label>
+          <input type="text" id="settings-cf-handle" placeholder="Username (eg. tourist)">
+          <p class="input-help">Used to fetch your real CF rating and profile details.</p>
+        </div>
+        <div class="input-group">
+          <label for="settings-leetcode-handle">LeetCode Handle</label>
+          <input type="text" id="settings-leetcode-handle" placeholder="Username (eg. neetcode)">
+          <p class="input-help">Used to fetch your real LeetCode ratings history and solved stats.</p>
+        </div>
+        <div class="input-group">
+          <label for="settings-codechef-handle">CodeChef Handle</label>
+          <input type="text" id="settings-codechef-handle" placeholder="Username (eg. gen_next)">
+          <p class="input-help">Used to fetch your real CodeChef rating and solved stats.</p>
+        </div>
+        <div class="input-group">
+          <label for="settings-atcoder-handle">AtCoder Handle</label>
+          <input type="text" id="settings-atcoder-handle" placeholder="Username (eg. chokudai)">
+          <p class="input-help">Used to fetch your real AtCoder rating and history.</p>
+        </div>
+        <div class="input-group">
+          <label for="settings-leetcode-rating">LeetCode Custom Baseline Rating</label>
+          <input type="number" id="settings-leetcode-rating" placeholder="Initial rating (eg. 1500)">
+        </div>
+        <div class="input-group">
+          <label for="settings-codechef-rating">CodeChef Custom Rating</label>
+          <input type="number" id="settings-codechef-rating" placeholder="Initial rating (eg. 1400)">
+        </div>
+        <div class="input-group">
+          <label for="settings-atcoder-rating">AtCoder Custom Rating</label>
+          <input type="number" id="settings-atcoder-rating" placeholder="Initial rating (eg. 1200)">
+        </div>
+        <div class="checkbox-row">
+          <label>
+            <input type="checkbox" id="settings-notifications-enable" checked>
+            <span class="custom-checkbox"></span>
+            Enable notifications 15m before contest starts
+          </label>
+        </div>
+        <div class="checkbox-row">
+          <label>
+            <input type="checkbox" id="settings-sound-enable" checked>
+            <span class="custom-checkbox"></span>
+            Enable sound alerts
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary cancel-modal-btn">Cancel</button>
+        <button class="btn btn-primary" id="save-settings-btn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM CONTEST -->
+  <div class="modal-overlay" id="modal-custom-contest">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Add Custom Contest</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <form id="custom-contest-form">
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="cc-name">Contest Name</label>
+            <input type="text" id="cc-name" required placeholder="eg. College Coding Cup 2026">
+          </div>
+          <div class="grid-2-col">
+            <div class="input-group">
+              <label for="cc-platform">Platform</label>
+              <select id="cc-platform" class="select-input">
+                <option value="codeforces">Codeforces</option>
+                <option value="leetcode">LeetCode</option>
+                <option value="codechef">CodeChef</option>
+                <option value="atcoder">AtCoder</option>
+                <option value="custom" selected>Custom/Other</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="cc-url">Contest URL (optional)</label>
+              <input type="url" id="cc-url" placeholder="https://example.com/contest">
+            </div>
+          </div>
+          <div class="grid-2-col">
+            <div class="input-group">
+              <label for="cc-starttime">Start Date & Time</label>
+              <input type="datetime-local" id="cc-starttime" required>
+            </div>
+            <div class="input-group">
+              <label for="cc-duration">Duration (Minutes)</label>
+              <input type="number" id="cc-duration" min="5" value="120" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Contest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: LOG PERFORMANCE -->
+  <div class="modal-overlay" id="modal-log-performance">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Log Contest Performance</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <form id="log-performance-form">
+        <input type="hidden" id="log-contest-id">
+        <input type="hidden" id="log-contest-platform">
+        <div class="modal-body">
+          <h4 id="log-contest-title" style="margin-bottom: 16px; color: var(--color-accent-indigo);">Contest Title</h4>
+          <div class="grid-2-col">
+            <div class="input-group">
+              <label for="log-rank">Rank Achieved</label>
+              <input type="number" id="log-rank" placeholder="eg. 150" required min="1">
+            </div>
+            <div class="input-group">
+              <label for="log-rating-change">Rating Change (eg. +45, -20)</label>
+              <input type="number" id="log-rating-change" placeholder="eg. 50">
+            </div>
+          </div>
+          <div class="grid-2-col">
+            <div class="input-group">
+              <label for="log-solved">Problems Solved</label>
+              <input type="number" id="log-solved" min="0" placeholder="eg. 4" required>
+            </div>
+            <div class="input-group">
+              <label for="log-total">Total Problems</label>
+              <input type="number" id="log-total" min="1" placeholder="eg. 6" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="log-notes">Contest Notes / Lessons Learned</label>
+            <textarea id="log-notes" rows="3" placeholder="What went well? Where did you get stuck? What mistakes will you avoid next time?"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Performance Log</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD CUSTOM PROBLEM -->
+  <div class="modal-overlay" id="modal-add-problem">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Add Problem to Notebook</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <form id="add-problem-form">
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="prob-title">Problem Title</label>
+            <input type="text" id="prob-title" required placeholder="eg. Two Sum">
+          </div>
+          <div class="input-group">
+            <label for="prob-url">Problem Link</label>
+            <input type="url" id="prob-url" placeholder="https://leetcode.com/problems/two-sum">
+          </div>
+          <div class="grid-3-col">
+            <div class="input-group">
+              <label for="prob-platform">Platform</label>
+              <select id="prob-platform" class="select-input">
+                <option value="leetcode">LeetCode</option>
+                <option value="codeforces">Codeforces</option>
+                <option value="codechef">CodeChef</option>
+                <option value="atcoder">AtCoder</option>
+                <option value="custom" selected>Custom</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="prob-difficulty">Difficulty</label>
+              <select id="prob-difficulty" class="select-input">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="prob-status">Status</label>
+              <select id="prob-status" class="select-input">
+                <option value="todo">To Do</option>
+                <option value="inprogress">In Progress</option>
+                <option value="solved">Solved</option>
+                <option value="review">Needs Review</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="prob-topic">Topic / Tag</label>
+            <input type="text" id="prob-topic" placeholder="eg. Dynamic Programming, Graphs, Arrays (separate with commas)">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Problem</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORT DSA SHEET -->
+  <div class="modal-overlay" id="modal-import-sheet">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Import Popular DSA Sheet</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 20px; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+          Importing a sheet will pre-populate your Problem Notebook with all its questions categorized by topics. You can track progress, toggle status, and save notes for each question.
+        </p>
+        <div class="dsa-sheets-grid">
+          <div class="dsa-sheet-card">
+            <h4>NeetCode 75</h4>
+            <p>75 essential LeetCode questions to review DSA fundamentals.</p>
+            <button class="btn btn-secondary btn-sm import-sheet-action" data-sheet="neetcode75">Import NeetCode 75</button>
+          </div>
+          <div class="dsa-sheet-card">
+            <h4>NeetCode 150</h4>
+            <p>Standard 150 comprehensive questions sheet covering all key topics.</p>
+            <button class="btn btn-secondary btn-sm import-sheet-action" data-sheet="neetcode150">Import NeetCode 150</button>
+          </div>
+          <div class="dsa-sheet-card">
+            <h4>Striver's SDE Sheet</h4>
+            <p>Complete set of 180+ problems tailored for SDE placement preparation.</p>
+            <button class="btn btn-secondary btn-sm import-sheet-action" data-sheet="striver">Import Striver SDE</button>
+          </div>
+          <div class="dsa-sheet-card">
+            <h4>Love Babbar Sheet</h4>
+            <p>Curated 450+ coding challenge sheet covering major DSA patterns.</p>
+            <button class="btn btn-secondary btn-sm import-sheet-action" data-sheet="babbar">Import Love Babbar 450</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary cancel-modal-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD GOAL -->
+  <div class="modal-overlay" id="modal-add-goal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Create New Goal</h3>
+        <button class="close-modal-btn" aria-label="Close Modal">&times;</button>
+      </div>
+      <form id="add-goal-form">
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="goal-title">Goal Name</label>
+            <input type="text" id="goal-title" required placeholder="eg. Solve 10 Dynamic Programming questions">
+          </div>
+          <div class="grid-2-col">
+            <div class="input-group">
+              <label for="goal-type">Goal Type</label>
+              <select id="goal-type" class="select-input">
+                <option value="solve">Solve Problems</option>
+                <option value="contest">Participate in Contests</option>
+                <option value="rating">Reach Rating Target</option>
+                <option value="other">Other Activity</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="goal-target-val">Target Value (Number)</label>
+              <input type="number" id="goal-target-val" min="1" value="10" required>
+            </div>
+          </div>
+          <div class="input-group" id="goal-topic-group">
+            <label for="goal-topic-tag">Topic Tag (Optional - for auto-tracking solve goals)</label>
+            <input type="text" id="goal-topic-tag" placeholder="eg. Dynamic Programming (must match problem tag)">
+          </div>
+          <div class="input-group">
+            <label for="goal-deadline">Deadline Date</label>
+            <input type="date" id="goal-deadline" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrapping main application -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
