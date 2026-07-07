@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+# Local databases / user state
+db.json
+# Build outputs
+dist/
+dist-ssr/
+*.local
+# Editor files and settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Operating system files
+.DS_Store
+Thumbs.db

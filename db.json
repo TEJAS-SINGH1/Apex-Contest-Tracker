@@ -1,0 +1,65 @@
+{
+  "settings": {
+    "cfHandle": "singhtejas1313",
+    "leetcodeRating": 1500,
+    "codechefRating": 1400,
+    "atcoderRating": 1200,
+    "notify": true,
+    "sound": true,
+    "cfRating": 1021,
+    "leetcodeHandle": "_TEJAS_SINGH",
+    "codechefHandle": "",
+    "atcoderHandle": ""
+  },
+  "problems": [
+    {
+      "id": "default_1",
+      "title": "Two Sum",
+      "url": "https://leetcode.com/problems/two-sum",
+      "platform": "leetcode",
+      "difficulty": "Easy",
+      "topic": "Arrays & Hashing",
+      "status": "solved",
+      "notes": "# Two Sum\nUse a Hash Map to store the complement of each element target-nums[i] alongside its index. Time complexity O(N), Space complexity O(N).",
+      "sheetName": "Custom",
+      "dateAdded": "2026-07-06T13:40:37.851Z"
+    },
+    {
+      "id": "default_2",
+      "title": "3Sum",
+      "url": "https://leetcode.com/problems/3sum",
+      "platform": "leetcode",
+      "difficulty": "Medium",
+      "topic": "Two Pointers",
+      "status": "todo",
+      "notes": "",
+      "sheetName": "Custom",
+      "dateAdded": "2026-07-06T13:40:37.851Z"
+    }
+  ],
+  "watchlist": [],
+  "performanceLogs": [],
+  "goals": [
+    {
+      "id": "g_default_1",
+      "title": "Solve 10 Array & Hashing Problems",
+      "type": "solve",
+      "target": 10,
+      "current": 1,
+      "tag": "Arrays & Hashing",
+      "deadline": "2026-07-13",
+      "completed": false
+    },
+    {
+      "id": "g_default_2",
+      "title": "Participate in 3 coding contests",
+      "type": "contest",
+      "target": 3,
+      "current": 0,
+      "tag": "",
+      "deadline": "2026-08-05",
+      "completed": false
+    }
+  ],
+  "customContests": []
+}
